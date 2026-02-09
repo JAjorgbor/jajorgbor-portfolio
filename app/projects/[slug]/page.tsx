@@ -101,6 +101,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <video
           controls
           className="aspect-video w-full rounded-xl overflow-hidden bg-neutral-900 border border-neutral-800 shadow-2xl relative"
+          loop
+          autoPlay
+          muted
+          playsInline
         >
           <source src={project.video} type="video/mp4" />
           Your browser does not support the video tag.
