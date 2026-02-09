@@ -29,12 +29,12 @@ export function Header() {
       initial={{ y: -100 }}
       animate={{
         y: 0,
-        width: isScrolled ? "60%" : "100%",
+        width: isScrolled ? "70%" : "100%",
         top: isScrolled ? 12 : 0,
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className={cn(
-        "fixed z-50 flex items-center justify-center md:justify-between left-1/2 -translate-x-1/2 transition-all duration-300",
+        "fixed z-50 flex items-center justify-between left-1/2 -translate-x-1/2 transition-all duration-300",
         isScrolled
           ? "h-14 px-8 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-lg shadow-2xl"
           : "h-16 px-6 md:px-12 border-b border-white/10 bg-black/50 backdrop-blur-md",
@@ -71,7 +71,7 @@ export function Header() {
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          "hidden md:inline-flex items-center justify-center rounded-full bg-white text-black text-xs font-semibold transition-all hover:scale-105 active:scale-95",
+          "inline-flex items-center justify-center rounded-full bg-white text-black text-xs font-semibold transition-all hover:scale-105 active:scale-95",
           isScrolled ? "px-4 py-1.5" : "px-5 py-2",
         )}
       >

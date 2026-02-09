@@ -8,6 +8,7 @@ import {
   Github,
   Twitter,
   CheckCircle2,
+  AlertCircle,
   Phone,
 } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +27,14 @@ const contactSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.email("Please enter a valid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  Message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
 export function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -44,19 +46,20 @@ export function Contact() {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    // Simulate API call
+    setError(null);
     try {
       console.log("Form Data:", data);
-      const res = await submitForm({
-        apiBaseUrl: "https://api.linkpane.com",
-        slug: "test-form",
+      await submitForm({
+        apiBaseUrl: "https://api.linkpane.com/v2",
+        slug: "portfolio-website-contact-form",
         data,
         pid: "42770138",
       });
       setIsSubmitted(true);
       reset();
-    } catch (error) {
-      console.log(error);
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || "Something went wrong. Please try again later.");
     }
   };
 
@@ -189,6 +192,18 @@ export function Contact() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3"
+                  >
+                    <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-400 font-medium">
+                      {error}
+                    </div>
+                  </motion.div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="block">
@@ -260,23 +275,23 @@ export function Contact() {
                   <Textarea
                     id="message"
                     placeholder="Tell me about your project..."
-                    {...register("message")}
+                    {...register("Message")}
                     className={`rounded-xl ${
-                      errors.message
+                      errors.Message
                         ? "border-red-500 focus-visible:ring-red-500"
                         : ""
                     }`}
                   />
-                  {errors.message && (
+                  {errors.Message && (
                     <p className="text-xs text-red-500 font-medium">
-                      {errors.message.message}
+                      {errors.Message.message}
                     </p>
                   )}
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-xl py-6 text-lg font-bold transition-all disabled:opacity-70"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white rounded-xl py-4 transition-all disabled:opacity-70"
                   isLoading={isSubmitting}
                 >
                   {!isSubmitting && <Send className="mr-2 h-5 w-5" />}
