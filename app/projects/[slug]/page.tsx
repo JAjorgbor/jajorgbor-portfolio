@@ -113,7 +113,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <div className="mt-24 grid gap-12 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <h3 className="text-2xl font-semibold text-white sticky top-32">
-              Development Overview
+              Role Overview
             </h3>
           </div>
           <div className="lg:col-span-2 prose prose-invert prose-lg text-neutral-400 ">

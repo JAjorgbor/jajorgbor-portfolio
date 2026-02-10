@@ -45,36 +45,36 @@ export const PROJECTS = [
     slug: "deer-nigeria",
     title: "DEER Nigeria — Energy On-Demand Platform",
     description:
-      "An energy-on-demand platform that simplifies access to services such as diesel delivery, cooking gas, solar solutions, and electricity vending. Contributed to feature development and interface improvements as part of the engineering team at Agency by Haqqman.",
+      "An energy-on-demand platform that simplifies access to services such as diesel delivery, cooking gas, solar solutions, and electricity vending. Played an active role in developing core frontend features and improving key user workflows as part of the engineering team at Agency by Haqqman.",
     tags: ["Next.js", "React", "Tailwind CSS", "Express.js", "MongoDB"],
     thumbnail: "/thumbnails/deer-nigeria.png",
     role: "Frontend Engineer",
     year: "2023",
     metrics: [
-      "Contributed to core platform feature implementation",
-      "Improved user experience across selected workflows",
+      "Contributed to development of core frontend features",
+      "Improved usability across key service workflows",
     ],
     link: "https://deernigeria.com",
     video: "/videos/DEER Nigeria.mp4",
     overview: (
       <ul className="mt-1 list-disc list-inside space-y-2">
-        <li className=" flex items-start gap-3">
+        <li className="flex items-start gap-3">
           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-          I contributed to the implementation of selected platform features,
-          focusing on translating product requirements into clear and reliable
-          user-facing experiences within an existing production system.
+          Actively contributed to the development of core frontend features,
+          translating product and business requirements into reliable,
+          production-ready interfaces used across major service flows.
         </li>
-        <li className=" flex items-start gap-3">
+        <li className="flex items-start gap-3">
           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-          My involvement included improving usability across key service flows
-          and ensuring new features aligned with established patterns, helping
-          maintain consistency as the platform evolved.
+          Worked on improving interaction patterns and usability across ordering
+          and account-related workflows, helping create a smoother and more
+          consistent user experience.
         </li>
-        <li className=" flex items-start gap-3">
+        <li className="flex items-start gap-3">
           <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-          The work required close collaboration with designers and engineers to
-          deliver features within defined timelines while maintaining
-          performance and interface clarity across the application.
+          Collaborated closely with design and engineering teams to deliver
+          features within existing system constraints while maintaining
+          performance and interface consistency as the platform expanded.
         </li>
       </ul>
     ),

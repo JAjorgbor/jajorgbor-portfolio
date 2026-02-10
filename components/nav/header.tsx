@@ -32,11 +32,16 @@ export function Header() {
         width: isScrolled ? "70%" : "100%",
         top: isScrolled ? 12 : 0,
       }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+        damping: 70,
+        bounce: 0.8,
+      }}
       className={cn(
         "fixed z-50 flex items-center justify-between left-1/2 -translate-x-1/2 transition-all duration-300",
         isScrolled
-          ? "h-14 px-8 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-lg shadow-2xl"
+          ? "h-14 px-4 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-lg shadow-2xl"
           : "h-16 px-6 md:px-12 border-b border-white/10 bg-black/50 backdrop-blur-md",
       )}
     >

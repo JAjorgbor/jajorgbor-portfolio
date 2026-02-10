@@ -31,7 +31,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-amber-500/30 selection:text-white relative`}
       >
         <MouseTracker />
-        <SmoothCursor />
+        <SmoothCursor
+          springConfig={{
+            damping: 70,
+            stiffness: 600,
+            mass: 1,
+            restDelta: 0.001,
+          }}
+        />
 
         {children}
       </body>
