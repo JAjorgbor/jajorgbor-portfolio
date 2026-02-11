@@ -42,8 +42,10 @@ export function Hero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
             >
-              Joshua Ajorgbor — Building scalable software solutions for
-              startups and enterprises across Africa and Beyond ✨🚀.
+              <strong className="font-semibold">Joshua Ajorgbor</strong> —
+              Fullstack engineer building scalable products and thoughtful
+              digital experiences for startups and growing businesses across
+              Africa and beyond. ✨🚀.
             </motion.p>
 
             <motion.div
