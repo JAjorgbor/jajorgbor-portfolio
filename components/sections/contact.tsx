@@ -1,28 +1,25 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { submitForm } from "@linkpane/sdk";
 import { motion } from "framer-motion";
 import {
-  Send,
-  Mail,
-  Linkedin,
-  Github,
-  Twitter,
-  CheckCircle2,
   AlertCircle,
-  Phone,
+  CheckCircle2,
+  Github,
+  Linkedin,
+  Mail,
+  MessageSquare,
+  Send,
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { submitForm } from "@linkpane/sdk";
-
 const contactSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
@@ -108,19 +105,19 @@ export function Contact() {
               </a>
 
               <a
-                href="tel:+2349035784325"
+                href="https://wa.me/+2349035784325"
                 className="flex items-center gap-4 group"
               >
                 <div className="p-3 bg-neutral-900 rounded-lg group-hover:bg-neutral-800 border border-neutral-800 transition-colors">
                   <div className="h-6 w-6 flex items-center justify-center font-bold text-amber-500">
                     <span className="text-lg">
-                      <Phone />
+                      <MessageSquare />
                     </span>
                   </div>
                 </div>
                 <div>
                   <div className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
-                    Phone
+                    Chat With Me
                   </div>
                   <div className="text-neutral-200 group-hover:text-amber-500 transition-colors">
                     +234 903 578 4325
