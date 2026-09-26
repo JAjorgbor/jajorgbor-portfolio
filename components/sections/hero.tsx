@@ -7,8 +7,15 @@ import { BackgroundBeams } from "@/components/ui/background-beams"; // Placehold
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { HeroVisual } from "@/components/ui/hero-visual";
+import type { HeroContent } from "@/sanity/lib/types";
 
-export function Hero() {
+interface HeroProps {
+  content?: HeroContent | null;
+  name?: string | null;
+  resumeUrl?: string | null;
+}
+
+export function Hero({ content, name, resumeUrl }: HeroProps) {
   return (
     <section
       className="relative flex lg:h-screen min-h-[800px] w-full items-center justify-center overflow-hidden bg-neutral-950 text-neutral-50 py-20 lg:py-0"
@@ -32,8 +39,8 @@ export function Hero() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             >
-              Product-Focused <br />
-              Fullstack Engineer.
+              {content?.headingLine1} <br />
+              {content?.headingLine2}
             </motion.h1>
 
             <motion.p
@@ -42,10 +49,9 @@ export function Hero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
             >
-              <strong className="font-semibold">Joshua Ajorgbor</strong> —
-              Fullstack engineer building scalable products and thoughtful
-              digital experiences for startups and growing businesses across
-              Africa and beyond. ✨🚀.
+              {name && <strong className="font-semibold">{name}</strong>}
+              {name && content?.intro && " — "}
+              {content?.intro}
             </motion.p>
 
             <motion.div
@@ -63,21 +69,19 @@ export function Hero() {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                View Projects
+                {content?.primaryCtaLabel ?? "View Projects"}
               </Button>
-              <Button
-                asChild
-                className="rounded-full border-neutral-800 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-900 md:px-8 md:py-6 text-lg cursor-pointer flex-1"
-                variant="outline"
-              >
-                <a
-                  href="https://showcv.ng/joshua-ajorgbor"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {resumeUrl && (
+                <Button
+                  asChild
+                  className="rounded-full border-neutral-800 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-900 md:px-8 md:py-6 text-lg cursor-pointer flex-1"
+                  variant="outline"
                 >
-                  View Resume
-                </a>
-              </Button>
+                  <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
+                    {content?.secondaryCtaLabel ?? "View Resume"}
+                  </a>
+                </Button>
+              )}
             </motion.div>
           </motion.div>
 

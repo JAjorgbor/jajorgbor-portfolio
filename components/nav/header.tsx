@@ -12,8 +12,16 @@ const NAV_ITEMS = [
   { name: "Contact", href: "/#contact" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  name?: string | null;
+  resumeUrl?: string | null;
+}
+
+export function Header({ name, resumeUrl }: HeaderProps) {
   const pathname = usePathname();
+  const nameParts = (name ?? "").trim().split(" ");
+  const lastName = nameParts.length > 1 ? nameParts.pop() : "";
+  const firstNames = nameParts.join(" ");
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -49,7 +57,7 @@ export function Header() {
         href="/"
         className="text-xl font-bold tracking-tighter text-white shrink-0"
       >
-        Joshua <span className="text-amber-500">Ajorgbor</span>
+        {firstNames} <span className="text-amber-500">{lastName}</span>
       </Link>
 
       <nav
@@ -71,17 +79,19 @@ export function Header() {
         ))}
       </nav>
 
-      <a
-        href="https://showcv.ng/joshua-ajorgbor"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(
-          "inline-flex items-center justify-center rounded-full bg-white text-black text-xs font-semibold transition-all hover:scale-105 active:scale-95",
-          isScrolled ? "px-4 py-1.5" : "px-5 py-2",
-        )}
-      >
-        Resume
-      </a>
+      {resumeUrl && (
+        <a
+          href={resumeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            "inline-flex items-center justify-center rounded-full bg-white text-black text-xs font-semibold transition-all hover:scale-105 active:scale-95",
+            isScrolled ? "px-4 py-1.5" : "px-5 py-2",
+          )}
+        >
+          Resume
+        </a>
+      )}
     </motion.header>
   );
 }

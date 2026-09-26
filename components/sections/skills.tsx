@@ -2,19 +2,14 @@
 
 import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
-import { SKILLS } from "@/lib/data";
+import type { SectionIntro, SkillCategory } from "@/sanity/lib/types";
 
-export function Skills() {
-  // Group skills by category
-  const categories = ["Frontend", "Backend", "Tools"];
-  const groupedSkills = categories.reduce(
-    (acc, cat) => {
-      acc[cat] = SKILLS.filter((s) => s.category === cat);
-      return acc;
-    },
-    {} as Record<string, typeof SKILLS>,
-  );
+interface SkillsProps {
+  content?: SectionIntro | null;
+  categories: SkillCategory[];
+}
 
+export function Skills({ content, categories }: SkillsProps) {
   return (
     <section
       id="skills"
@@ -29,7 +24,7 @@ export function Skills() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            Technical Ecosystem
+            {content?.heading}
           </motion.h2>
           <motion.p
             className="text-neutral-400 max-w-lg"
@@ -38,15 +33,14 @@ export function Skills() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            A structured breakdown of my core competencies across the full
-            development stack.
+            {content?.subheading}
           </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((category, catIndex) => (
             <motion.div
-              key={category}
+              key={category._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -55,16 +49,16 @@ export function Skills() {
             >
               <h3 className="text-lg font-bold text-neutral-100 mb-6 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-amber-500" />
-                {category === "Tools" ? "Tools & Infrastructure" : category}
+                {category.title}
               </h3>
 
               <div className="flex flex-wrap gap-2">
-                {groupedSkills[category]?.map((skill) => (
+                {category.skills?.map((skill) => (
                   <div
-                    key={skill.name}
+                    key={skill}
                     className="px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-xs font-medium text-neutral-400 hover:text-neutral-200 hover:border-neutral-700 transition-colors"
                   >
-                    {skill.name}
+                    {skill}
                   </div>
                 ))}
               </div>

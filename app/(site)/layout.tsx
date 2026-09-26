@@ -3,8 +3,10 @@ import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MouseTracker } from "@/components/ui/mouse-glow";
-import "./globals.css";
+import "../globals.css";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
+import { SanityLive } from "@/sanity/lib/live";
+import { getSettings } from "@/sanity/lib/fetch";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,11 +18,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Joshua Ajorgbor | Product-Focused Full-Stack Developer",
-  description:
-    "Full-Stack Developer with 4+ years of experience building scalable software solutions with TypeScript, Next.js, and Node.js.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: settings?.seoTitle ?? settings?.name ?? "Portfolio",
+    description: settings?.seoDescription ?? undefined,
+  };
+}
 
 export default function RootLayout({
   children,
@@ -45,6 +49,7 @@ export default function RootLayout({
         />
 
         {children}
+        <SanityLive />
       </body>
     </html>
   );

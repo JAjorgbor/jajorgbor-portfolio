@@ -3,13 +3,19 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { PROJECTS } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
+import type { ProjectCard, SectionIntro } from "@/sanity/lib/types";
 
-export function Projects() {
+interface ProjectsProps {
+  content?: SectionIntro | null;
+  projects: ProjectCard[];
+}
+
+export function Projects({ content, projects }: ProjectsProps) {
   return (
     <section id="projects" className="py-24 bg-neutral-950 text-neutral-50">
       <Container>
@@ -22,11 +28,10 @@ export function Projects() {
         >
           <div>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-neutral-50">
-              Projects
+              {content?.heading ?? "Projects"}
             </h2>
             <p className="mt-4 text-neutral-400 max-w-lg">
-              A collection of projects that define my journey in engineering and
-              product design.
+              {content?.subheading}
             </p>
           </div>
           {/* <Button
@@ -39,9 +44,9 @@ export function Projects() {
         </motion.div>
 
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {PROJECTS.map((project, index) => (
+          {projects.map((project, index) => (
             <motion.div
-              key={project.slug}
+              key={project._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -49,18 +54,22 @@ export function Projects() {
               className="group relative flex flex-col overflow-hidden rounded-xl bg-neutral-900 border border-neutral-800 transition-colors hover:border-neutral-700"
             >
               {/* Image Placeholder */}
-              <Image
-                src={project.thumbnail}
-                alt={project.title}
-                width={500}
-                height={300}
-                className="aspect-video object-cover"
-              />
+              {project.thumbnail && (
+                <Image
+                  src={urlFor(project.thumbnail).width(1000).height(600).url()}
+                  alt={project.thumbnail.alt ?? project.title}
+                  width={500}
+                  height={300}
+                  placeholder={project.thumbnail.lqip ? "blur" : "empty"}
+                  blurDataURL={project.thumbnail.lqip ?? undefined}
+                  className="aspect-video object-cover"
+                />
+              )}
 
               <div className="flex flex-1 flex-col p-6">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    {project.tags.slice(0, 2).map((tag) => (
+                    {project.tags?.slice(0, 2).map((tag) => (
                       <Badge
                         key={tag}
                         variant="outline"

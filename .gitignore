@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 DESIGN_PLAN.md
+!.env.example

@@ -11,25 +11,50 @@ import { motion } from "framer-motion";
 import {
   AlertCircle,
   CheckCircle2,
+  Dribbble,
   Github,
+  Globe,
+  Instagram,
   Linkedin,
   Mail,
   MessageSquare,
   Send,
+  Twitter,
+  Youtube,
+  type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { saveContactSubmission } from "@/lib/actions/contact";
+import type { ContactContent, SiteSettings } from "@/sanity/lib/types";
+
 const contactSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.email("Please enter a valid email address"),
   Message: z.string().min(10, "Message must be at least 10 characters"),
+  website: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-export function Contact() {
+const SOCIAL_ICONS: Record<string, LucideIcon> = {
+  github: Github,
+  linkedin: Linkedin,
+  twitter: Twitter,
+  instagram: Instagram,
+  youtube: Youtube,
+  dribbble: Dribbble,
+  website: Globe,
+};
+
+interface ContactProps {
+  content?: ContactContent | null;
+  settings?: SiteSettings | null;
+}
+
+export function Contact({ content, settings }: ContactProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,20 +69,34 @@ export function Contact() {
 
   const onSubmit = async (data: ContactFormData) => {
     setError(null);
-    try {
-      console.log("Form Data:", data);
-      await submitForm({
-        apiBaseUrl: "https://api.linkpane.com/v2",
-        slug: "portfolio-website-contact-form",
-        data,
-        pid: "42770138",
-      });
+    const { website, ...fields } = data;
+
+    // Save to Sanity and forward to Linkpane (email notification) in parallel;
+    // the message counts as delivered if either one succeeds.
+    const [saved, forwarded] = await Promise.allSettled([
+      saveContactSubmission(data),
+      website
+        ? Promise.resolve()
+        : submitForm({
+            apiBaseUrl: "https://api.linkpane.com/v2",
+            slug: "portfolio-website-contact-form",
+            data: fields,
+            pid: "42770138",
+          }),
+    ]);
+
+    const savedOk = saved.status === "fulfilled" && saved.value.ok;
+    if (savedOk || forwarded.status === "fulfilled") {
       setIsSubmitted(true);
       reset();
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.message || "Something went wrong. Please try again later.");
+      return;
     }
+
+    console.error(saved, forwarded);
+    setError(
+      (saved.status === "fulfilled" && !saved.value.ok && saved.value.error) ||
+        "Something went wrong. Please try again later.",
+    );
   };
 
   return (
@@ -77,83 +116,72 @@ export function Contact() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-8">
-              Let&apos;s build something{" "}
-              <span className="text-amber-500">exceptional.</span>
+              {content?.heading}{" "}
+              <span className="text-amber-500">{content?.headingAccent}</span>
             </h2>
             <p className="text-lg text-neutral-400 mb-12 max-w-lg">
-              Currently open to full-time roles and select contract
-              opportunities where I can contribute to building thoughtful,
-              well-engineered products.
+              {content?.body}
             </p>
 
             <div className="space-y-6">
-              <a
-                href="mailto:joshuaajorgbor@gmail.com"
-                className="flex items-center gap-4 group"
-              >
-                <div className="p-3 bg-neutral-900 rounded-lg group-hover:bg-neutral-800 border border-neutral-800 transition-colors">
-                  <Mail className="h-6 w-6 text-amber-500" />
-                </div>
-                <div>
-                  <div className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
-                    Email
+              {settings?.email && (
+                <a
+                  href={`mailto:${settings.email}`}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="p-3 bg-neutral-900 rounded-lg group-hover:bg-neutral-800 border border-neutral-800 transition-colors">
+                    <Mail className="h-6 w-6 text-amber-500" />
                   </div>
-                  <div className="text-neutral-200 group-hover:text-amber-500 transition-colors">
-                    joshuaajorgbor@gmail.com
+                  <div>
+                    <div className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
+                      Email
+                    </div>
+                    <div className="text-neutral-200 group-hover:text-amber-500 transition-colors">
+                      {settings.email}
+                    </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              )}
 
-              <a
-                href="https://wa.me/+2349035784325"
-                className="flex items-center gap-4 group"
-              >
-                <div className="p-3 bg-neutral-900 rounded-lg group-hover:bg-neutral-800 border border-neutral-800 transition-colors">
-                  <div className="h-6 w-6 flex items-center justify-center font-bold text-amber-500">
-                    <span className="text-lg">
-                      <MessageSquare />
-                    </span>
+              {settings?.chatUrl && (
+                <a
+                  href={settings.chatUrl}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="p-3 bg-neutral-900 rounded-lg group-hover:bg-neutral-800 border border-neutral-800 transition-colors">
+                    <div className="h-6 w-6 flex items-center justify-center font-bold text-amber-500">
+                      <span className="text-lg">
+                        <MessageSquare />
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
-                    Chat With Me
+                  <div>
+                    <div className="text-xs text-neutral-500 uppercase tracking-widest font-bold">
+                      {settings.chatLabel ?? "Chat With Me"}
+                    </div>
+                    <div className="text-neutral-200 group-hover:text-amber-500 transition-colors">
+                      {settings.phoneDisplay}
+                    </div>
                   </div>
-                  <div className="text-neutral-200 group-hover:text-amber-500 transition-colors">
-                    +234 903 578 4325
-                  </div>
-                </div>
-              </a>
+                </a>
+              )}
 
               <div className="flex gap-4 mt-6">
-                {[
-                  {
-                    icon: Github,
-                    href: "https://github.com/jajorgbor",
-                    label: "GitHub",
-                  },
-                  {
-                    icon: Linkedin,
-                    href: "https://linkedin.com/in/jajorgbor",
-                    label: "LinkedIn",
-                  },
-                  // {
-                  //   icon: Twitter,
-                  //   href: "https://twitter.com/jajorgbor",
-                  //   label: "Twitter",
-                  // },
-                ].map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 bg-neutral-900 rounded-xl hover:bg-neutral-800 transition-colors border border-neutral-800"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="h-6 w-6 text-neutral-400 hover:text-white transition-colors" />
-                  </a>
-                ))}
+                {settings?.socials?.map((social) => {
+                  const Icon = SOCIAL_ICONS[social.platform] ?? Globe;
+                  return (
+                    <a
+                      key={social._key}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-4 bg-neutral-900 rounded-xl hover:bg-neutral-800 transition-colors border border-neutral-800"
+                      aria-label={social.platform}
+                    >
+                      <Icon className="h-6 w-6 text-neutral-400 hover:text-white transition-colors" />
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
@@ -174,10 +202,11 @@ export function Contact() {
                 <div className="h-16 w-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4">
                   <CheckCircle2 className="h-8 w-8 text-amber-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Message Sent!</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  {content?.successTitle ?? "Message Sent!"}
+                </h3>
                 <p className="text-neutral-400 max-w-sm">
-                  Thank you for reaching out. I&apos;ll get back to you within
-                  24-48 hours.
+                  {content?.successMessage}
                 </p>
                 <Button
                   variant="outline"
@@ -201,6 +230,14 @@ export function Contact() {
                     </div>
                   </motion.div>
                 )}
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                  {...register("website")}
+                />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName" className="block">

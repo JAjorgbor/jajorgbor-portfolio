@@ -2,10 +2,21 @@
 
 import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
-import { EXPERIENCE, EDUCATION } from "@/lib/data";
+import { PortableText } from "next-sanity";
 import { Badge } from "@/components/ui/badge";
+import type {
+  AboutContent,
+  Education,
+  Experience,
+} from "@/sanity/lib/types";
 
-export function About() {
+interface AboutProps {
+  content?: AboutContent | null;
+  experience: Experience[];
+  education: Education[];
+}
+
+export function About({ content, experience, education }: AboutProps) {
   return (
     <section
       id="about"
@@ -20,21 +31,11 @@ export function About() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-8">
-              Engineering with <br />
-              <span className="text-neutral-500">Fullstack Intent.</span>
+              {content?.heading} <br />
+              <span className="text-neutral-500">{content?.headingMuted}</span>
             </h2>
             <div className="prose prose-invert prose-lg text-neutral-400">
-              <p>
-                Full-Stack Developer with 4+ years of experience building
-                scalable software solutions for startups and enterprises across
-                Africa.
-              </p>
-              <p>
-                As a product-focused engineer, I have contributed to core
-                flagship products as well as dynamic client projects across
-                major tech hubs. I specialize in clean architecture, intuitive
-                UX, and solving real problems with efficient, maintainable code.
-              </p>
+              {content?.body && <PortableText value={content.body} />}
             </div>
 
             <div className="mt-16">
@@ -42,8 +43,8 @@ export function About() {
                 Education
               </h3>
               <div className="space-y-8">
-                {EDUCATION.map((edu, index) => (
-                  <div key={index} className="group">
+                {education.map((edu) => (
+                  <div key={edu._id} className="group">
                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-2">
                       <h4 className="text-lg font-bold text-neutral-100 group-hover:text-amber-500 transition-colors">
                         {edu.degree}
@@ -57,7 +58,7 @@ export function About() {
                       <span className="text-neutral-500">{edu.location}</span>
                     </div>
                     <ul className="space-y-2">
-                      {edu.achievements.map((achievement, i) => (
+                      {edu.achievements?.map((achievement, i) => (
                         <li
                           key={i}
                           className="text-sm text-neutral-500 flex items-start gap-3"
@@ -83,16 +84,18 @@ export function About() {
             <div>
               <h3 className="text-xl font-semibold mb-8 border-b border-neutral-800 pb-2 flex items-center justify-between">
                 Professional Experience
-                <Badge
-                  variant="outline"
-                  className="text-[10px] text-neutral-500"
-                >
-                  2022 — Present
-                </Badge>
+                {content?.experienceBadge && (
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-neutral-500"
+                  >
+                    {content.experienceBadge}
+                  </Badge>
+                )}
               </h3>
               <div className="space-y-12">
-                {EXPERIENCE.map((job, index) => (
-                  <div key={index} className="relative pl-0 group">
+                {experience.map((job) => (
+                  <div key={job._id} className="relative pl-0 group">
                     <div className="flex flex-col sm:flex-row sm:items-baseline justify-between mb-4 gap-2">
                       <div>
                         <h4 className="text-lg font-bold text-neutral-100 group-hover:text-amber-500 transition-colors">
@@ -113,7 +116,7 @@ export function About() {
                     </p>
 
                     <ul className="space-y-2">
-                      {job.achievements.map((achievement, i) => (
+                      {job.achievements?.map((achievement, i) => (
                         <li
                           key={i}
                           className="text-sm text-neutral-500 flex items-start gap-3"
