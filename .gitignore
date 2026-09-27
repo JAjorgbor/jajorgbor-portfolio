@@ -42,3 +42,6 @@ next-env.d.ts
 
 DESIGN_PLAN.md
 !.env.example
+
+# screenshot loop output
+/.shots

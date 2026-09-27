@@ -2,6 +2,7 @@ import { CogIcon } from "@sanity/icons/Cog";
 import { EnvelopeIcon } from "@sanity/icons/Envelope";
 import { HomeIcon } from "@sanity/icons/Home";
 import { InboxIcon } from "@sanity/icons/Inbox";
+import { UserIcon } from "@sanity/icons/User";
 import type { StructureResolver } from "sanity/structure";
 
 export const structure: StructureResolver = (S) =>
@@ -27,6 +28,16 @@ export const structure: StructureResolver = (S) =>
             .schemaType("homePage")
             .documentId("homePage")
             .title("Home Page"),
+        ),
+      S.listItem()
+        .title("About Page")
+        .id("aboutPage")
+        .icon(UserIcon)
+        .child(
+          S.document()
+            .schemaType("aboutPage")
+            .documentId("aboutPage")
+            .title("About Page"),
         ),
       S.divider(),
       S.documentTypeListItem("project").title("Projects"),

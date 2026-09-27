@@ -1,4 +1,5 @@
 import type { SchemaTypeDefinition } from "sanity";
+import { aboutPage } from "./aboutPage";
 import { contactSubmission } from "./contactSubmission";
 import { education } from "./education";
 import { experience } from "./experience";
@@ -10,6 +11,7 @@ import { skillCategory } from "./skillCategory";
 export const schemaTypes: SchemaTypeDefinition[] = [
   siteSettings,
   homePage,
+  aboutPage,
   project,
   experience,
   education,
@@ -17,4 +19,4 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   contactSubmission,
 ];
 
-export const SINGLETON_TYPES = new Set(["siteSettings", "homePage"]);
+export const SINGLETON_TYPES = new Set(["siteSettings", "homePage", "aboutPage"]);

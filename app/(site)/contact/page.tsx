@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Contact } from "@/components/sections/contact";
-import { Footer } from "@/components/sections/footer";
-import { Header } from "@/components/nav/header";
+import { ContactCredit } from "@/components/site/contact-credit";
+import { ContactForm } from "@/components/site/contact-form";
 import { getContactSection, getSettings } from "@/sanity/lib/fetch";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,18 +12,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const [settings, contactSection] = await Promise.all([
-    getSettings(),
-    getContactSection(),
-  ]);
+  const [settings, content] = await Promise.all([getSettings(), getContactSection()]);
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-50 selection:bg-amber-500/30 selection:text-white">
-      <Header name={settings?.name} resumeUrl={settings?.resumeUrl} />
-      <div className="pt-20">
-        <Contact content={contactSection} settings={settings} />
-      </div>
-      <Footer settings={settings} />
-    </main>
+    <div className="pt-20 md:pt-24">
+      <ContactCredit content={content} settings={settings}>
+        <ContactForm content={content} />
+      </ContactCredit>
+    </div>
   );
 }

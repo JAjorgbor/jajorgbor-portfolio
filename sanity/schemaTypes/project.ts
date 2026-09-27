@@ -42,6 +42,13 @@ export const project = defineType({
       initialValue: 100,
     }),
     defineField({
+      name: "tagline",
+      title: "Tagline",
+      description: "One sentence under the title in the title sequence.",
+      type: "string",
+      group: "content",
+    }),
+    defineField({
       name: "description",
       type: "text",
       rows: 4,
@@ -78,6 +85,66 @@ export const project = defineType({
       ],
     }),
     defineField({
+      name: "sections",
+      title: "Narrative sections",
+      description: "The case study body, in order. Each section can carry media.",
+      type: "array",
+      group: "content",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "section",
+          fields: [
+            defineField({ name: "heading", type: "string" }),
+            defineField({
+              name: "body",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "block",
+                  styles: [{ title: "Normal", value: "normal" }],
+                  lists: [{ title: "Bullet", value: "bullet" }],
+                }),
+              ],
+            }),
+            defineField({
+              name: "media",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [defineField({ name: "alt", type: "string" })],
+                }),
+                defineArrayMember({
+                  type: "file",
+                  name: "video",
+                  options: { accept: "video/*" },
+                }),
+              ],
+            }),
+            defineField({
+              name: "layout",
+              type: "string",
+              options: {
+                list: [
+                  { title: "Column", value: "column" },
+                  { title: "Full bleed", value: "full" },
+                ],
+                layout: "radio",
+                direction: "horizontal",
+              },
+              initialValue: "column",
+            }),
+          ],
+          preview: {
+            select: { title: "heading", media: "media.0" },
+            prepare: ({ title, media }) => ({ title: title ?? "Untitled section", media }),
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: "thumbnail",
       type: "image",
       group: "media",
@@ -91,6 +158,15 @@ export const project = defineType({
       type: "file",
       group: "media",
       options: { accept: "video/*" },
+    }),
+    defineField({
+      name: "loopStart",
+      title: "Hover loop start (seconds)",
+      description: "Where the 4-second hover loop begins in the demo video.",
+      type: "number",
+      group: "media",
+      initialValue: 0,
+      validation: (rule) => rule.min(0),
     }),
     defineField({ name: "link", title: "Live URL", type: "url", group: "links" }),
     defineField({ name: "repoUrl", title: "Repository URL", type: "url", group: "links" }),

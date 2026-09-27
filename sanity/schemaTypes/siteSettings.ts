@@ -31,9 +31,38 @@ export const siteSettings = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "role",
+      title: "Role",
+      description: 'Short, e.g. "Fullstack Engineer". Shown as meta beside the name.',
+      type: "string",
+      group: "general",
+    }),
+    defineField({
+      name: "positioning",
+      title: "Positioning line",
+      description:
+        "The one line people should remember. Use / where the line should break on wide screens.",
+      type: "string",
+      group: "general",
+    }),
+    defineField({
+      name: "availability",
+      title: "Availability",
+      description: 'e.g. "Open to full-time and contract roles". Leave empty to hide.',
+      type: "string",
+      group: "general",
+    }),
+    defineField({
       name: "resumeUrl",
       title: "Resume URL",
       type: "url",
+      group: "general",
+    }),
+    defineField({
+      name: "notFoundLine",
+      title: "404 line",
+      description: "Display line on the 404 page.",
+      type: "string",
       group: "general",
     }),
     defineField({

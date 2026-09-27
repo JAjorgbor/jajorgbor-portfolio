@@ -1,204 +1,213 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
-import { PortableText, type PortableTextComponents } from "next-sanity";
-import { Badge } from "@/components/ui/badge";
-import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
+import { PortableText } from "next-sanity";
+import { LetterboxVideo } from "@/components/site/letterbox";
+import { Label, MetaItem, MetaLink } from "@/components/site/meta";
 import { client } from "@/sanity/lib/client";
-import { getProject, getSettings } from "@/sanity/lib/fetch";
+import { getProject, getProjects, getSettings } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import { PROJECT_SLUGS_QUERY } from "@/sanity/lib/queries";
+import type { ProjectSection } from "@/sanity/lib/types";
+import { splitTitle } from "@/components/site/title";
 
 interface ProjectPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 }
-
-const overviewComponents: PortableTextComponents = {
-  list: {
-    bullet: ({ children }) => <ul className="mt-1 space-y-2">{children}</ul>,
-  },
-  listItem: {
-    bullet: ({ children }) => (
-      <li className="flex items-start gap-3">
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-        <span>{children}</span>
-      </li>
-    ),
-  },
-};
 
 export async function generateStaticParams() {
   return client.fetch<{ slug: string }[]>(PROJECT_SLUGS_QUERY);
 }
 
-export async function generateMetadata({
-  params,
-}: ProjectPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const [project, settings] = await Promise.all([
-    getProject(slug),
-    getSettings(),
-  ]);
+  const [project, settings] = await Promise.all([getProject(slug), getSettings()]);
   if (!project) return {};
-
   return {
     title: settings?.name ? `${project.title} | ${settings.name}` : project.title,
-    description: project.description ?? undefined,
-    openGraph: project.thumbnail
-      ? { images: [urlFor(project.thumbnail).width(1200).height(630).url()] }
-      : undefined,
+    description: project.tagline ?? project.description ?? undefined,
   };
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  // Await params because in Next.js 15+ params is a Promise
   const { slug } = await params;
-  const project = await getProject(slug);
+  const [project, projects] = await Promise.all([getProject(slug), getProjects()]);
+  if (!project) notFound();
 
-  if (!project) {
-    notFound();
-  }
+  const index = projects.findIndex((p) => p.slug === slug);
+  const next = projects[(index + 1) % projects.length];
+  const { name, descriptor } = splitTitle(project.title);
+  const nextTitle = next ? splitTitle(next.title) : null;
 
   return (
-    <article className="min-h-screen bg-neutral-950 text-neutral-50 selection:bg-amber-500/30">
-      <div className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur-md sticky top-0 z-50">
-        <Container className="flex items-center justify-between py-4">
-          <Link
-            href="/"
-            className="group flex items-center text-sm font-medium text-neutral-400 transition-colors hover:text-white"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Projects
-          </Link>
-          <div className="flex gap-4">
-            {project.repoUrl ? (
-              <Button
-                size="sm"
-                variant="outline"
-                className="hidden text-foreground sm:flex"
-                asChild
-              >
-                <a
-                  href={project.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Github className="mr-2 h-4 w-4" /> Repo
-                </a>
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                className="hidden text-foreground sm:flex"
-                disabled
-              >
-                <Github className="mr-2 h-4 w-4" /> Repo
-              </Button>
-            )}
-            {project.link && (
-              <Button size="sm" variant="primary" asChild>
-                <a href={project.link} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-2 h-4 w-4" /> Project Link
-                </a>
-              </Button>
-            )}
+    <article>
+      {/* §7.5 Title sequence */}
+      <section data-scene="theatre" className="grid-12 page-x gap-y-12 bg-bg pb-(--section-tight) pt-32 text-ink md:pt-40">
+        <div data-reveal="cut" data-delay="1" className="col-span-12 grid grid-cols-2 gap-6 md:grid-cols-4">
+          {project.role && <MetaItem label="Role">{project.role}</MetaItem>}
+          {project.year && <MetaItem label="Year">{project.year}</MetaItem>}
+          {project.tags?.length ? (
+            <MetaItem label="Stack">{project.tags.join(", ")}</MetaItem>
+          ) : null}
+          {project.link && (
+            <div className="flex flex-col gap-1">
+              <Label>Link</Label>
+              <MetaLink href={project.link} external>
+                Visit
+              </MetaLink>
+            </div>
+          )}
+        </div>
+
+        <div className="col-span-12">
+          <h1 data-reveal="focus" className="display text-step-6" style={{ viewTransitionName: "project-title" }}>
+            {name}
+          </h1>
+          {descriptor && (
+            <p data-reveal="lines" data-delay="0.3" className="display-mid mt-6 text-step-3 text-ink-2">
+              {descriptor}
+            </p>
+          )}
+          {(project.tagline ?? project.description) && (
+            <p data-reveal="block" data-delay="0.5" className="lead mt-10 max-w-[60ch] text-ink-2">
+              {project.tagline ?? project.description}
+            </p>
+          )}
+        </div>
+
+        <div className="col-span-12 lg:col-span-10 lg:col-start-2">
+          <LetterboxVideo project={project} />
+        </div>
+      </section>
+
+      {/* Narrative, on paper */}
+      <div data-scene="paper" className="bg-bg text-ink">
+        {project.overview && (
+          <Section label="Overview">
+            <div data-reveal="block" className="prose-credit lead text-ink-2">
+              <PortableText value={project.overview} />
+            </div>
+          </Section>
+        )}
+
+        {project.metrics?.length ? (
+          <Section label="Impact">
+            <ul className="flex flex-col">
+              {project.metrics.map((m) => (
+                <li key={m} data-reveal="lines" className="display-mid border-t border-line py-5 text-step-2 last:border-b">
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ) : null}
+
+        {project.sections?.map((section) => (
+          <NarrativeSection key={section._key} section={section} />
+        ))}
+
+        <Section label="Credits">
+          <div data-reveal="cut" className="grid grid-cols-2 gap-8 md:grid-cols-3">
+            {project.role && <MetaItem label="Role">{project.role}</MetaItem>}
+            {project.tags?.length ? (
+              <MetaItem label="Stack">{project.tags.join(", ")}</MetaItem>
+            ) : null}
+            <div className="flex flex-col gap-3">
+              {project.link && (
+                <MetaLink href={project.link} external>
+                  Live site
+                </MetaLink>
+              )}
+              {project.repoUrl && (
+                <MetaLink href={project.repoUrl} external>
+                  Repository
+                </MetaLink>
+              )}
+            </div>
           </div>
-        </Container>
+        </Section>
       </div>
 
-      <Container className="py-20">
-        <div className="mb-16 space-y-6">
-          <div className="flex flex-wrap gap-2">
-            {project.tags?.map((tag) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="border-neutral-700 text-neutral-400"
-              >
-                {tag}
-              </Badge>
-            ))}
+      {/* §7.7 Next project: the next film's first card */}
+      {next && next.slug !== slug && (
+        <section data-scene="theatre" className="grid-12 page-x gap-y-8 bg-bg py-(--section) text-ink">
+          <div className="col-span-12 lg:col-span-2">
+            <Label>Next</Label>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl text-white">
-            {project.title}
-          </h1>
-          <p className="max-w-2xl text-xl text-neutral-400">
-            {project.description}
-          </p>
-
-          <div className="grid grid-cols-2 gap-8 pt-8 sm:grid-cols-4 border-t border-neutral-800 mt-12">
-            <div>
-              <div className="text-sm font-medium text-neutral-500">Role</div>
-              <div className="mt-1 text-neutral-200">{project.role}</div>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-neutral-500">Year</div>
-              <div className="mt-1 text-neutral-200">{project.year}</div>
-            </div>
-            <div className="col-span-2">
-              <div className="text-sm font-medium text-neutral-500">Impact</div>
-              <ul className="mt-1 list-disc list-inside text-neutral-200 space-y-1">
-                {project.metrics?.map((m) => (
-                  <li key={m}>{m}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3">
+            <Link
+              href={`/projects/${next.slug}`}
+              data-shared-title
+              className="display credit-link block text-step-5 text-ink"
+            >
+              <span data-reveal="lines" className="block">
+                {nextTitle?.name}
+              </span>
+            </Link>
+            {nextTitle?.descriptor && <p className="mt-4 text-ink-2">{nextTitle.descriptor}</p>}
+            <p className="meta mt-4 text-ink-3">
+              {[next.role, next.year].filter(Boolean).join(" · ")}
+            </p>
           </div>
-        </div>
-
-        {/* Project Content / Image */}
-        {project.videoUrl && (
-          <video
-            controls
-            className="aspect-video w-full rounded-xl overflow-hidden bg-neutral-900 border border-neutral-800 shadow-2xl relative"
-            loop
-            autoPlay
-            muted
-            playsInline
-            poster={
-              project.thumbnail
-                ? urlFor(project.thumbnail).width(1600).url()
-                : undefined
-            }
-          >
-            <source
-              src={project.videoUrl}
-              type={project.videoMimeType ?? "video/mp4"}
-            />
-            Your browser does not support the video tag.
-          </video>
-        )}
-
-        {project.overview && (
-          <div className="mt-24 grid gap-12 lg:grid-cols-3">
-            <div className="lg:col-span-1">
-              <h3 className="text-2xl font-semibold text-white sticky top-32">
-                Role Overview
-              </h3>
-            </div>
-            <div className="lg:col-span-2 prose prose-invert prose-lg text-neutral-400 ">
-              <PortableText
-                value={project.overview}
-                components={overviewComponents}
-              />
-            </div>
-          </div>
-        )}
-
-        <div className="mt-32 border-t border-neutral-900 pt-16 flex justify-between items-center">
-          <Link
-            href="/"
-            className="text-neutral-500 hover:text-white transition-colors"
-          >
-            ← Back to Home
-          </Link>
-        </div>
-      </Container>
+        </section>
+      )}
     </article>
+  );
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <section className="grid-12 page-x gap-y-8 py-(--section-tight)">
+      <div className="col-span-12 lg:col-span-3">
+        <div data-reveal="cut" className="lg:sticky lg:top-24">
+          <Label>{label}</Label>
+        </div>
+      </div>
+      <div className="col-span-12 md:col-span-10 md:col-start-2 lg:col-span-6 lg:col-start-4">{children}</div>
+    </section>
+  );
+}
+
+function NarrativeSection({ section }: { section: ProjectSection }) {
+  const full = section.layout === "full";
+  return (
+    <>
+      {(section.heading || section.body) && (
+        <Section label={section.heading ?? ""}>
+          {section.body && (
+            <div data-reveal="block" className="prose-credit lead text-ink-2">
+              <PortableText value={section.body} />
+            </div>
+          )}
+        </Section>
+      )}
+      {section.media?.length ? (
+        <div className={full ? "" : "grid-12 page-x"}>
+          <div className={`flex flex-col gap-6 ${full ? "" : "col-span-12 lg:col-span-6 lg:col-start-4"}`}>
+            {section.media.map((m) =>
+              m._type === "image" ? (
+                <Image
+                  key={m._key}
+                  src={urlFor(m).width(2400).url()}
+                  alt={m.alt ?? ""}
+                  width={2400}
+                  height={Math.round(2400 / (m.aspect ?? 16 / 9))}
+                  sizes={full ? "100vw" : "(min-width: 1280px) 50vw, 100vw"}
+                  placeholder={m.lqip ? "blur" : "empty"}
+                  blurDataURL={m.lqip ?? undefined}
+                />
+              ) : m.url ? (
+                <div key={m._key} className="letterbox">
+                  <video controls preload="none" playsInline muted loop>
+                    <source src={m.url} type={m.mimeType ?? "video/mp4"} />
+                  </video>
+                </div>
+              ) : null,
+            )}
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

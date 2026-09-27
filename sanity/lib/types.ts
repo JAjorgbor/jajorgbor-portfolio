@@ -4,13 +4,18 @@ import type { SanityImageSource } from "@sanity/image-url";
 export type SanityImage = SanityImageSource & {
   alt?: string | null;
   lqip?: string | null;
+  aspect?: number | null;
 };
 
 export type SocialLink = { _key: string; platform: string; url: string };
 
 export type SiteSettings = {
   name?: string | null;
+  role?: string | null;
+  positioning?: string | null;
+  availability?: string | null;
   resumeUrl?: string | null;
+  notFoundLine?: string | null;
   footerNote?: string | null;
   email?: string | null;
   chatLabel?: string | null;
@@ -57,24 +62,46 @@ export type HomePage = {
   contactSection?: ContactContent | null;
 };
 
+export type AboutPage = {
+  heading?: string | null;
+  story?: PortableTextBlock[] | null;
+  approach?: string[] | null;
+  detail?: string | null;
+};
+
 export type ProjectCard = {
   _id: string;
   title: string;
   slug: string;
+  tagline?: string | null;
   description?: string | null;
   role?: string | null;
   year?: string | null;
   tags?: string[] | null;
   metrics?: string[] | null;
   thumbnail?: SanityImage | null;
+  videoUrl?: string | null;
+  videoMimeType?: string | null;
+  loopStart?: number | null;
+};
+
+export type SectionMedia =
+  | ({ _key: string; _type: "image" } & SanityImage)
+  | { _key: string; _type: "video"; url?: string | null; mimeType?: string | null };
+
+export type ProjectSection = {
+  _key: string;
+  heading?: string | null;
+  body?: PortableTextBlock[] | null;
+  layout?: "column" | "full" | null;
+  media?: SectionMedia[] | null;
 };
 
 export type ProjectDetail = ProjectCard & {
   overview?: PortableTextBlock[] | null;
   link?: string | null;
   repoUrl?: string | null;
-  videoUrl?: string | null;
-  videoMimeType?: string | null;
+  sections?: ProjectSection[] | null;
 };
 
 export type Experience = {
@@ -105,6 +132,10 @@ export type SkillCategory = {
 export type HomeData = {
   home: HomePage | null;
   projects: ProjectCard[];
+};
+
+export type AboutData = {
+  about: AboutPage | null;
   experience: Experience[];
   education: Education[];
   skills: SkillCategory[];

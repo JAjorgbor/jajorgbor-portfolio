@@ -1,0 +1,122 @@
+/* Design tokens. Source of truth: DESIGN.md. Change the document first, then this file. */
+
+:root {
+  /* §3 Typography: faces are provided by next/font as --font-display / --font-text */
+  --font-display-stack: var(--font-display), "Fraunces", Georgia, serif;
+  --font-display-italic-stack: var(--font-display-italic), "Fraunces", Georgia, serif;
+  --font-text-stack: var(--font-text), "Instrument Sans", system-ui, sans-serif;
+
+  --display-tracking: -0.03em;
+  --display-tracking-mid: -0.015em;
+  --display-leading: 0.92;
+  --display-leading-mid: 1.05;
+
+  --text-settings: "wdth" 100, "wght" 400;
+  --text-settings-strong: "wdth" 100, "wght" 600;
+  --meta-settings: "wdth" 75, "wght" 500;
+  --text-leading: 1.5;
+  --meta-leading: 1.2;
+  --meta-tracking: 0.08em;
+
+  /* §3 Fluid scale: 375px → 1440px */
+  --step--2: clamp(0.72rem, 0.692rem + 0.12vw, 0.8rem);
+  --step--1: clamp(0.85rem, 0.818rem + 0.135vw, 0.94rem);
+  --step-0: clamp(1rem, 0.956rem + 0.188vw, 1.125rem);
+  --step-1: clamp(1.25rem, 1.162rem + 0.376vw, 1.5rem);
+  --step-2: clamp(1.6rem, 1.371rem + 0.977vw, 2.25rem);
+  --step-3: clamp(2.1rem, 1.642rem + 1.953vw, 3.4rem);
+  --step-4: clamp(2.8rem, 2.025rem + 3.305vw, 5rem);
+  --step-5: clamp(3.6rem, 2.227rem + 5.859vw, 7.5rem);
+  --step-6: clamp(4.5rem, 2.211rem + 9.765vw, 11rem);
+
+  /* §5 Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 192px;
+  --space-12: 256px;
+  --section: clamp(6rem, 12vw, 14rem);
+  --section-tight: clamp(3rem, 6vw, 7rem);
+
+  /* §5 Grid */
+  --columns: 12;
+  --margin: clamp(1rem, 4vw, 4rem);
+  --gutter: clamp(0.75rem, 1.5vw, 1.5rem);
+
+  /* §6 Motion */
+  --ease-curtain: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-dolly: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cut: steps(1, end);
+  --dur-1: 160ms;
+  --dur-2: 400ms;
+  --dur-3: 900ms;
+  --dur-4: 1400ms;
+  --dur-5: 2200ms;
+  --stagger-char: 18ms;
+  --stagger-word: 45ms;
+  --stagger-line: 110ms;
+  --stagger-item: 80ms;
+
+  /* §7.8 Cursor, §7.9 Magnetic, §7.10 Grain */
+  --cursor-size: 8px;
+  --cursor-ring: 56px;
+  --magnet-radius: 40px;
+  --magnet-shift: 6px;
+  --hover-fill: color-mix(in srgb, var(--ink) 8%, transparent);
+
+  /* Chrome that floats over both scenes (header, cursor) is drawn in this
+     value with mix-blend-mode: difference: dark on paper, light on theatre. */
+  --blend-ink: #f2efe9;
+}
+
+/* §4 Colour: Paper (default scene). Declared on [data-scene] too so a paper
+   section inside a theatre ancestor comes back to paper. */
+:root,
+[data-scene="paper"] {
+  --bg: #f2efe9;
+  --ink: #121212;
+  --ink-2: #4a4744;
+  --ink-3: #6f6b66;
+  --line: #d9d4cb;
+  --accent: #e0421b;
+  --frame: #0b0b0b;
+  --grain-opacity: 0.04;
+
+  color-scheme: light;
+}
+
+/* §4 Colour: Theatre. Set by the film, never by the visitor. */
+[data-scene="theatre"] {
+  --bg: #0b0b0b;
+  --ink: #f2efe9;
+  --ink-2: #b8b3ab;
+  --ink-3: #8a857e;
+  --line: #262626;
+  --accent: #ff5a2e;
+  --frame: #0b0b0b;
+  --grain-opacity: 0.07;
+
+  color-scheme: dark;
+}
+
+/* §6 Reduced motion: durations collapse, easings become plain. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 200ms;
+    --dur-4: 200ms;
+    --dur-5: 0ms;
+    --stagger-char: 0ms;
+    --stagger-word: 0ms;
+    --stagger-line: 0ms;
+    --stagger-item: 0ms;
+  }
+}
