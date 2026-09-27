@@ -1,0 +1,224 @@
+/* Preview page only. Not part of the site's stylesheet. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text-stack);
+  font-variation-settings: var(--text-settings);
+  font-size: var(--step-0);
+  line-height: var(--text-leading);
+  transition:
+    background-color var(--dur-3) var(--ease-curtain),
+    color var(--dur-3) var(--ease-curtain);
+}
+
+.page {
+  padding: var(--section-tight) var(--margin) var(--section);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+.meta {
+  font-variation-settings: var(--meta-settings);
+  font-size: var(--step--2);
+  line-height: var(--meta-leading);
+  letter-spacing: var(--meta-tracking);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta--accent {
+  color: var(--accent);
+}
+
+.display {
+  font-family: var(--font-display-stack);
+  font-weight: 300;
+  letter-spacing: var(--display-tracking);
+  line-height: var(--display-leading);
+  margin: 0;
+  font-weight: normal;
+}
+
+.display--mid {
+  letter-spacing: var(--display-tracking-mid);
+  line-height: var(--display-leading-mid);
+}
+
+
+
+.display em {
+  font-family: var(--font-display-italic-stack);
+  font-style: italic;
+}
+
+.section {
+  margin-top: var(--section);
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-5);
+}
+
+.section__label {
+  grid-column: 1 / span 3;
+  margin-bottom: var(--space-6);
+}
+
+.section__body {
+  grid-column: 4 / span 9;
+}
+
+@media (max-width: 767px) {
+  .section__label,
+  .section__body {
+    grid-column: 1 / -1;
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-4);
+}
+
+.swatch {
+  border: 1px solid var(--line);
+  padding: var(--space-3);
+}
+
+.swatch__chip {
+  height: 4rem;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--line);
+}
+
+.scene {
+  padding: var(--space-6);
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.spacing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.spacing__bar {
+  background: var(--ink);
+  width: var(--space-2);
+}
+
+.easing {
+  position: relative;
+  height: 2.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.easing__dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translate(0, -50%);
+  animation: travel var(--dur-4) infinite alternate;
+  animation-timing-function: var(--ease, var(--ease-curtain));
+}
+
+@keyframes travel {
+  to {
+    transform: translate(calc(100cqw - 0.75rem), -50%);
+  }
+}
+
+/* §3 line-break rule: authored breaks from 768 up; balanced wrapping below. */
+.display {
+  text-wrap: balance;
+}
+
+.br-md {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .br-md {
+    display: inline;
+  }
+}
+
+.section__body--full {
+  grid-column: 1 / -1;
+}
+
+.mask {
+  overflow: hidden;
+}
+
+.mask > * {
+  animation: rise var(--dur-3) var(--ease-curtain) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+
+.toggle {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--margin);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+}
+
+.toggle:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .easing__dot,
+  .mask > * {
+    animation: none;
+  }
+}

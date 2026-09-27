@@ -1,30 +1,411 @@
 @import "tailwindcss";
+@import "./tokens.css";
 
-/* * {
-  cursor: none !important;
-} */
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Tailwind reads the tokens; nothing here defines a value of its own. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --breakpoint-*: initial;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1920px;
+
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-frame: var(--frame);
+  --color-hover: var(--hover-fill);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-display: var(--font-display-stack);
+  --font-text: var(--font-text-stack);
+
+  --text-step--2: var(--step--2);
+  --text-step--1: var(--step--1);
+  --text-step-0: var(--step-0);
+  --text-step-1: var(--step-1);
+  --text-step-2: var(--step-2);
+  --text-step-3: var(--step-3);
+  --text-step-4: var(--step-4);
+  --text-step-5: var(--step-5);
+  --text-step-6: var(--step-6);
+
+  --ease-curtain: var(--ease-curtain);
+  --ease-dolly: var(--ease-dolly);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: var(--font-text-stack);
+    font-variation-settings: var(--text-settings);
+    font-size: var(--step-0);
+    line-height: var(--text-leading);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  strong,
+  b {
+    font-weight: normal;
+    font-variation-settings: var(--text-settings-strong);
+  }
+
+  ::selection {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* §3 display type. Sizes come from the step utilities. */
+  .display {
+    font-family: var(--font-display-stack);
+    font-weight: 300;
+    letter-spacing: var(--display-tracking);
+    line-height: var(--display-leading);
+    text-wrap: balance;
+  }
+
+  .display-mid {
+    font-family: var(--font-display-stack);
+    font-weight: 300;
+    letter-spacing: var(--display-tracking-mid);
+    line-height: var(--display-leading-mid);
+    text-wrap: balance;
+  }
+
+  /* The italic is its own (non-preloaded) file. */
+  .display em,
+  .display-mid em,
+  .display .italic,
+  .display-mid .italic,
+  .credit-link:hover,
+  .group:hover .group-hover\:italic {
+    font-family: var(--font-display-italic-stack);
+    font-style: italic;
+  }
+
+  /* §3 meta. */
+  .meta {
+    font-variation-settings: var(--meta-settings);
+    font-size: var(--step--2);
+    line-height: var(--meta-leading);
+    letter-spacing: var(--meta-tracking);
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lead {
+    font-size: var(--step-1);
+    line-height: var(--text-leading);
+    text-wrap: pretty;
+  }
+
+  /* §5 grid. Twelve tracks at every width. */
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+  }
+
+  .page-x {
+    padding-inline: var(--margin);
+  }
+
+  /* §3 line-break rule: authored breaks from 768 up. */
+  .br-md {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .br-md {
+      display: inline;
+    }
+  }
+
+  /* §7.4 letterbox frame: 16:9 picture inside black bars. */
+  .letterbox {
+    background: var(--frame);
+    padding-block: 5.5%;
+  }
+
+  .letterbox > * {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  /* §6 entrances: hidden before their reveal only when JS + motion are on. */
+  [data-motion="on"] [data-reveal]:not([data-reveal="focus"]) {
+    visibility: hidden;
+  }
+
+  /* §7.1 The leader shows once per session, and only with motion on. These
+     rules own `display`; the element's utilities must never set it. */
+  .leader {
+    display: none;
+  }
+
+  [data-leader="play"] .leader {
+    display: grid;
+  }
+
+  /* §7.7 Page transitions: the old page rises like a curtain; the clicked
+     project title morphs into the case-study heading. */
+  ::view-transition-old(root) {
+    animation: vt-curtain var(--dur-4) var(--ease-curtain) both;
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  ::view-transition-group(project-title) {
+    animation-duration: var(--dur-4);
+    animation-timing-function: var(--ease-curtain);
+    z-index: 2;
+  }
+
+  @keyframes vt-curtain {
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+
+  /* Floating chrome readable on both scenes. */
+  .blend-ink {
+    mix-blend-mode: difference;
+    color: var(--blend-ink);
+  }
+
+  /* §7.8 Cursor. Only shown once the component has confirmed a fine pointer. */
+  .has-cursor,
+  .has-cursor a,
+  .has-cursor button,
+  .has-cursor [data-cursor] {
+    cursor: none;
+  }
+
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 70;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    color: var(--blend-ink);
+    visibility: hidden;
+  }
+
+  .cursor__dot,
+  .cursor__ring,
+  .cursor__label {
+    grid-area: 1 / 1;
+    transition:
+      transform var(--dur-2) var(--ease-dolly),
+      opacity var(--dur-1) var(--ease-dolly);
+  }
+
+  .cursor__dot {
+    width: var(--cursor-size);
+    height: var(--cursor-size);
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .cursor__ring {
+    width: var(--cursor-ring);
+    height: var(--cursor-ring);
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    transform: scale(0.14);
+    opacity: 0;
+  }
+
+  .cursor__label {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .cursor[data-state="link"] .cursor__dot {
+    transform: scale(1.75);
+  }
+
+  .cursor[data-state="view"] .cursor__dot,
+  .cursor[data-state="open"] .cursor__dot,
+  .cursor[data-state="drag"] .cursor__dot {
+    transform: scale(0);
+  }
+
+  .cursor[data-state="view"] .cursor__ring,
+  .cursor[data-state="open"] .cursor__ring,
+  .cursor[data-state="drag"] .cursor__ring {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .cursor[data-state="view"] .cursor__label,
+  .cursor[data-state="open"] .cursor__label,
+  .cursor[data-state="drag"] .cursor__label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* §7.10 Grain. One overlay covers both scenes at once, so it blends with
+     `overlay`, which reads as grain on paper and on black alike. */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+
+  /* Portable text in body columns, or a bare list given the class directly. */
+  .prose-credit > * + * {
+    margin-top: var(--space-5);
+  }
+
+  .prose-credit ul,
+  ul.prose-credit {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .prose-credit ul > li,
+  ul.prose-credit > li {
+    position: relative;
+    padding-left: var(--space-5);
+  }
+
+  .prose-credit ul > li::before,
+  ul.prose-credit > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: var(--space-3);
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .prose-credit ul > li + li,
+  ul.prose-credit > li + li {
+    margin-top: var(--space-3);
+  }
+
+  /* §12 Interactive states. Every link, button and field has hover, focus and
+     active designed here; nothing relies on browser defaults. */
+  .nav-link {
+    position: relative;
+    transition: opacity var(--dur-1) var(--ease-dolly);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.35em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-2) var(--ease-curtain);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after,
+  .nav-link[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+
+  .meta-link {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.35em;
+    transition:
+      color var(--dur-1) var(--ease-dolly),
+      text-underline-offset var(--dur-1) var(--ease-dolly);
+  }
+
+  .meta-link:hover {
+    color: var(--accent);
+    text-underline-offset: 0.5em;
+  }
+
+  .meta-link:active {
+    text-underline-offset: 0.25em;
+  }
+
+  .credit-link {
+    transition: color var(--dur-1) var(--ease-dolly);
+  }
+
+  .credit-link:hover {
+    font-style: italic;
+  }
+
+  .credit-link:active {
+    color: var(--ink-2);
+  }
+
+  .button-credit {
+    border: 1px solid var(--ink);
+    transition:
+      background-color var(--dur-2) var(--ease-dolly),
+      color var(--dur-2) var(--ease-dolly),
+      opacity var(--dur-1) var(--ease-dolly);
+  }
+
+  .button-credit:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .button-credit:active:not(:disabled) {
+    opacity: 0.8;
+  }
+
+  .field-credit {
+    border-bottom: 1px solid var(--line);
+    transition: border-color var(--dur-2) var(--ease-dolly);
+  }
+
+  .field-credit:hover {
+    border-color: var(--ink-3);
+  }
+
+  .field-credit:focus {
+    border-color: var(--ink);
+    outline: none;
+  }
 }
